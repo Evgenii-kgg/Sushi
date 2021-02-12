@@ -1,27 +1,28 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
-    name:{
+const ProductSchema = new Schema({
+    title:{
         type: String,
         required: true
     },
-    email:{
+    description:{
         type: String,
         required: true
     },
-    password:{
+    size:{
         type: String,
         required: true
     },
-    date:{
-        type: Date,
-        default: Date.now
-    },
-    role: {
+    count:{
         type: String,
         required: true
-    }
+    },
+    price:{
+        type: String,
+        required: true
+    },
+
 });
 
-mongoose.model('users', UserSchema);
+mongoose.model('product', ProductSchema);
