@@ -8,13 +8,9 @@ const ProductSchema = new Schema({
     },
     description:{
         type: String,
-        required: true
+        required: false
     },
-    size:{
-        type: String,
-        required: true
-    },
-    count:{
+    weight:{
         type: String,
         required: true
     },

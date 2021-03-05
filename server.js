@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 const users =require('./routes/users');
 
-require('./config/passport')(passport);
+// require('./config/passport')(passport);
 const db = require('./config/database');
 
 mongoose.Promise = global.Promise;
@@ -52,15 +52,15 @@ app.use(passport.session());
 //     next();
 // });
 
-app.get('/', (req, res)=> {
-    res.render('index');
-});
+// app.get('/', (req, res)=> {
+//     res.render('index');
+// });
+//
+// app.get('/about', (req, res)=> {
+//     res.render('about');
+// });
 
-app.get('/about', (req, res)=> {
-    res.render('about');
-});
-
-app.use('/ideas', ideas);
+// app.use('/ideas', ideas);
 app.use('/users', users);
 
 app.listen(port, ()=>{
