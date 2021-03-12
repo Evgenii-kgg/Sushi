@@ -1,7 +1,5 @@
-const mongoose = require('mongoose');
-const express = require('express');
 const Product = require('../models/Product')
-const errorHandlers = require('../utils/errorHandler');
+const error = require('../service/error');
 
 module.exports.addProducts = async (req, res) => {
     try {
@@ -13,7 +11,7 @@ module.exports.addProducts = async (req, res) => {
         }).save();
         res.status(200).json(products)
     } catch (e) {
-        errorHandlers(res, e)
+        error(res, e)
     }
 }
 
@@ -27,7 +25,7 @@ module.exports.getProduct = async (req, res)=>{
         }).save();
         res.status(201).json(product)
     } catch (e) {
-        errorHandler(res, e)
+        error(res, e)
     }
 };
 
@@ -38,6 +36,6 @@ module.exports.removeProducts = async (req, res) => {
             message: 'Позиция была удалена'
         })
     } catch (e) {
-        errorHandler(res, e)
+        error(res, e)
     }
 }
