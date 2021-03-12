@@ -18,6 +18,10 @@ const ProductSchema = new Schema({
         type: String,
         required: true
     },
+    category:{
+        ref: 'categories',
+        type: Schema.Types.ObjectId
+    },
 
 });
 

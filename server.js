@@ -8,9 +8,10 @@ const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const users = require('./routes/users');
+const authRoutes = require('./routes/auth');
 const product = require('./routes/products')
 const order = require('./routes/order')
+const category = require('./routes/category')
 
 // require('./config/passport')(passport);
 const db = require('./config/database');
@@ -41,7 +42,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/product', product);
+app.use('/api/product', product);
+app.use('/api/product', category);
 app.use('/api/order', order);
-app.use('/users', users);
+app.use('/api/auth', authRoutes);
 

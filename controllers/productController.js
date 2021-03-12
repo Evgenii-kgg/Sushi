@@ -17,19 +17,14 @@ module.exports.addProducts = async (req, res) => {
 
 module.exports.getProduct = async (req, res)=>{
     try {
-        const product = await new Product({
-            name: req.body.name,
-            cost: req.body.cost,
-            category: req.body.category,
-            user: req.user.id
-        }).save();
+        const product = await new Product.find({user: req.user.id});
         res.status(201).json(product)
     } catch (e) {
         error(res, e)
     }
 };
 
-module.exports.removeProducts = async (req, res) => {
+module.exports.removeProduct = async (req, res) => {
     try {
         await Product.remove({_id: req.params.id});
         res.status(200).json({
@@ -39,3 +34,12 @@ module.exports.removeProducts = async (req, res) => {
         error(res, e)
     }
 }
+
+module.exports.update = async (req, res)=>{
+    try {
+        const position = await Position.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true});
+        res.status(200).json(position)
+    } catch (e) {
+        error(res, e)
+    }
+};
