@@ -1,10 +1,10 @@
-const CategoryController = require('../models/Category');
+const Category = require('../models/Category');
 // const Position = require('../models/Position');
 const errorHandlers = require('../service/error');
 
 module.exports.getAll = async (req, res)=>{
     try {
-        const categories = await CategoryController.find({user: req.user.id});
+        const categories = await Category.find({user: req.user.id});
         res.status(200).json(categories);
     } catch (e) {
         errorHandlers(res, e)
@@ -13,7 +13,7 @@ module.exports.getAll = async (req, res)=>{
 
 module.exports.getById = async (req, res)=>{
     try {
-        const category = await CategoryController.findById(req.params.id);
+        const category = await Category.findById(req.params.id);
         res.status(200).json(category);
     } catch (e) {
         errorHandlers(res, e)
@@ -22,7 +22,7 @@ module.exports.getById = async (req, res)=>{
 
 module.exports.remove = async (req, res)=>{
     try {
-        await CategoryController.remove({_id: req.params.id});
+        await Category.remove({_id: req.params.id});
         // await Position.remove({category: req.params.id});
         res.status(200).json({
             message: 'Категория удалена'
@@ -34,7 +34,7 @@ module.exports.remove = async (req, res)=>{
 };
 
 module.exports.create = async (req, res)=>{
-    const category = new CategoryController({
+    const category = new Category({
         name: req.body.name,
         user: req.user.id,
         imageSrc: req.file ? req.file.path : ''
@@ -57,7 +57,7 @@ module.exports.update = async (req, res)=>{
     }
 
     try {
-        const category = await CategoryController.findOneAndUpdate({_id: req.params.id}, {$set: updated}, {new: true});
+        const category = await Category.findOneAndUpdate({_id: req.params.id}, {$set: updated}, {new: true});
         res.status(200).json(category);
     } catch (e) {
         errorHandlers(res, e)

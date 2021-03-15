@@ -8,6 +8,7 @@ module.exports.addProducts = async (req, res) => {
             description: req.body.description,
             weight: req.body.weight,
             price: req.body.price,
+            category: req.body.category,
         }).save();
         res.status(200).json(products)
     } catch (e) {
@@ -17,7 +18,10 @@ module.exports.addProducts = async (req, res) => {
 
 module.exports.getProduct = async (req, res)=>{
     try {
-        const product = await new Product.find({user: req.user.id});
+        const product = await Product.find({
+            title: req.title.id,
+            category: req.param.category
+        });
         res.status(201).json(product)
     } catch (e) {
         error(res, e)
@@ -35,7 +39,7 @@ module.exports.removeProduct = async (req, res) => {
     }
 }
 
-module.exports.update = async (req, res)=>{
+module.exports.updateProduct = async (req, res)=>{
     try {
         const position = await Position.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true});
         res.status(200).json(position)

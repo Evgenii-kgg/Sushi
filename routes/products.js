@@ -6,7 +6,7 @@ const auth = passport.authenticate('jwt', {session: false});
 
 router.get('/:id', auth, controller.getProduct);
 router.post('/add', auth, controller.addProducts);
-router.patch('/:id', auth, controller.update);
+router.patch('/:id', auth, controller.updateProduct);
 router.get('/:id', auth, controller.removeProduct);
 
 

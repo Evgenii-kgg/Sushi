@@ -12,8 +12,6 @@ const authRoutes = require('./routes/auth');
 const product = require('./routes/products')
 const order = require('./routes/order')
 const category = require('./routes/category')
-
-// require('./config/passport')(passport);
 const db = require('./config/database');
 
 mongoose.Promise = global.Promise;
@@ -27,10 +25,9 @@ app.listen(port, ()=>{
     console.log(`Server started on port ${port}`);
 });
 
+app.use(require('cors')());
 app.use(bodyParser.urlencoded({extended: false}));
-
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(methodOverride('_method'));
 
 app.use(session({
@@ -40,6 +37,7 @@ app.use(session({
 }));
 
 app.use(passport.initialize());
+require('./config/passport')(passport);
 app.use(passport.session());
 
 app.use('/api/product', product);
