@@ -1,38 +1,27 @@
-const LocalStrategy = require('passport-local')
-    .Strategy;
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-
 const User = mongoose.model('users');
+const keys = require('../config/database');
 
+const options = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: keys.jwt
+};
 
-module.exports = (passport)=>{
-    passport.use(new LocalStrategy({usernameField: 'email'}, (email, password, done)=>{
-        User.findOne({
-            email: email,
-        }).then(user =>{
-            if (!user){
-                return done(null, false, {message: 'No User Found'});
-            }
-
-            bcrypt.compare(password, user.password, (err, isMatch)=>{
-                if (err) throw err;
-                if (isMatch){
-                    return done(null, user);
+module.exports = passport => {
+    passport.use(
+        new JwtStrategy(options, async (payload, done)=>{
+            try {
+                const user = await User.findById(payload.userId).select('email id');
+                if (user){
+                    done(null, user)
                 } else {
-                    return done(null, false, {message: 'Password Incorrect'})
-
+                    done(null, false)
                 }
-            })
+            } catch (e) {
+                console.log(e)
+            }
         })
-    }));
-    passport.serializeUser(function(user, done) {
-        done(null, user.id);
-    });
-
-    passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user) {
-            done(err, user);
-        });
-    });
+    )
 };

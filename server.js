@@ -13,11 +13,9 @@ const product = require('./routes/products')
 const order = require('./routes/order')
 const category = require('./routes/category')
 const db = require('./config/database');
+const MongoClient = require("mongodb").MongoClient;
 
-mongoose.Promise = global.Promise;
-mongoose.connect(db.mongoURI, {
-    useNewUrlParser: true
-})
+mongoose.connect(db.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(()=> console.log('MongoDB Connected!'))
     .catch(err => console.log(err));
 

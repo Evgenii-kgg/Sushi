@@ -14,11 +14,22 @@ module.exports.addProducts = async (req, res) => {
     } catch (e) {
         error(res, e)
     }
-}
+};
+
+module.exports.getProducts = async  (req, res) => {
+    try {
+        const product = await Product.find ({
+            title: req.body.title
+        })
+        res.status(200).json(product)
+    } catch (e) {
+        error(res, e)
+    }
+};
 
 module.exports.getProduct = async (req, res)=>{
     try {
-        const product = await Product.find({
+        const product = await Product.findOne({
             title: req.title.id,
             category: req.param.category
         });

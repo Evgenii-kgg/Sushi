@@ -18,10 +18,11 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    role: {
+    role: [{
         type: String,
-        required: true
-    }
+        required: true,
+        ref: 'Role'
+    }]
 });
 
 mongoose.model('users', UserSchema);

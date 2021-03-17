@@ -1,52 +1,72 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const keys = require('../config/database');
 const User = require('../models/User');
-const errorHandler = require('../service/error');
+const Role = require('../models/Role')
+const {validationResult} = require('express-validator')
+const {secret} = require("../config/key")
 
-module.exports.login = async (req, res)=>{
-    const candidate = await User.findOne({email: req.body.email});
-    if (candidate){
-        const passwordResult = bcrypt.compareSync(req.body.password, candidate.password);
-        if (passwordResult){
-            const token = jwt.sign({
-                email: candidate.email,
-                userId: candidate._id
-            }, keys.jwt, {expiresIn: 60*60});
-            res.status(200).json({
-                token: `Bearer ${token}`
-            })
-        } else {
-            res.status(401).json({
-                message: 'Неверно введен пароль. Попробуйте снова.'
-            })
-        }
-    } else {
-        res.status(404).json({
-            message: 'Пользователь не найден'
-        })
+const generateAccessToken = (id, roles) => {
+    const payload = {
+        id,
+        roles
     }
-};
+    return jwt.sign(payload, secret, {expiresIn: "24h"} )
+}
 
-module.exports.register = async (req, res)=>{
-    const candidate = await User.findOne({email: req.body.email});
-
-    if (candidate){
-        res.status(409).json({
-            massage: 'Такой Email уже зарегистрирован. Попробуйте другой.'
-        });
-    } else {
-        const salt = bcrypt.genSaltSync(10);
-        const password = req.body.password;
-        const user = new User({
-            email: req.body.email,
-            password: bcrypt.hashSync(password, salt)
-        });
+class authController {
+    async getUsers(req, res) {
         try {
-            await user.save();
-            res.status(201).json(user);
+            const users = await User.find()
+            res.json(users)
         } catch (e) {
-            errorHandler(res, e)
+            console.log(e)
         }
     }
-};
+
+    async login(req, res) {
+        try {
+            const {email, password} = req.body
+            const user = await User.findOne({email})
+            if (!user) {
+                return res.status(400).json({message: `Пользователь ${email} не найден`})
+            }
+            const validPassword = bcrypt.compareSync(password, user.password)
+            if (!validPassword) {
+                return res.status(400).json({message: `Введен неверный пароль`})
+            }
+            const token = generateAccessToken(user._id, user.roles)
+            return res.json({token})
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({message: 'Login error'})
+        }
+    }
+
+    async registration(req, res) {
+        try {
+            const errors = validationResult(req)
+            if (!errors.isEmpty()) {
+                return res.status(400).json({message: "Ошибка при регистрации", errors})
+            }
+            const {email, password} = req.body;
+            const candidate = await User.findOne({email})
+            if (candidate) {
+                return res.status(400).json({message: "Пользователь с таким именем уже существует"})
+            }
+            const salt = bcrypt.genSaltSync(10);
+            const userRole = await Role.findOne({value: "USER"})
+            const user = new User({
+                email,
+                password: bcrypt.hashSync(password, salt),
+                roles: [userRole.value]
+            });
+            await user.save()
+            return res.json({message: "Пользователь успешно зарегистрирован"})
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({message: 'Registration error'})
+        }
+    }
+}
+
+module.exports = new authController()
