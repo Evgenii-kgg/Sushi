@@ -5,15 +5,16 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const mongoose = require('mongoose');
-const app = express();
-const port = process.env.PORT || 3000;
-
 const authRoutes = require('./routes/auth');
 const product = require('./routes/products')
 const order = require('./routes/order')
 const category = require('./routes/category')
 const db = require('./config/database');
 const MongoClient = require("mongodb").MongoClient;
+require('./config/passport')(passport);
+
+const app = express();
+const port = process.env.PORT || 3000;
 
 mongoose.connect(db.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(()=> console.log('MongoDB Connected!'))
@@ -35,7 +36,6 @@ app.use(session({
 }));
 
 app.use(passport.initialize());
-require('./config/passport')(passport);
 app.use(passport.session());
 
 app.use('/api/product', product);

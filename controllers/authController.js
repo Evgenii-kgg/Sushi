@@ -16,6 +16,10 @@ const generateAccessToken = (id, roles) => {
 class authController {
     async getUsers(req, res) {
         try {
+            // const userRole = new Role()
+            // const adminRole = new Role({value: 'ADMIN'})
+            // await userRole.save()
+            // await adminRole.save()
             const users = await User.find()
             res.json(users)
         } catch (e) {
@@ -53,11 +57,12 @@ class authController {
             if (candidate) {
                 return res.status(400).json({message: "Пользователь с таким именем уже существует"})
             }
-            const salt = bcrypt.genSaltSync(10);
+            console.log(req)
+            const hashPassword = await bcrypt.hashSync(password, 7);
             const userRole = await Role.findOne({value: "USER"})
             const user = new User({
                 email,
-                password: bcrypt.hashSync(password, salt),
+                password: hashPassword,
                 roles: [userRole.value]
             });
             await user.save()
